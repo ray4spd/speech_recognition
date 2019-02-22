@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:speech_recognition/speech_recognition.dart';
 
@@ -6,8 +7,8 @@ void main() {
 }
 
 const languages = const [
-  const Language('Francais', 'fr_FR'),
   const Language('English', 'en_US'),
+  const Language('Francais', 'fr_FR'),
   const Language('Pусский', 'ru_RU'),
   const Language('Italiano', 'it_IT'),
   const Language('Español', 'es_ES'),
@@ -50,7 +51,7 @@ class _MyAppState extends State<MyApp> {
     _speech.setCurrentLocaleHandler(onCurrentLocale);
     _speech.setRecognitionStartedHandler(onRecognitionStarted);
     _speech.setRecognitionResultHandler(onRecognitionResult);
-    _speech.setRecognitionCompleteHandler(onRecognitionComplete);
+    //_speech.setRecognitionCompleteHandler(onRecognitionComplete);
     _speech.setErrorHandler(errorHandler);
     _speech
         .activate()
@@ -61,6 +62,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return new MaterialApp(
       home: new Scaffold(
+
         appBar: new AppBar(
           title: new Text('SpeechRecognition'),
           actions: [
@@ -79,9 +81,12 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   new Expanded(
                       child: new Container(
-                          padding: const EdgeInsets.all(8.0),
-                          color: Colors.grey.shade200,
-                          child: new Text(transcription))),
+                        //padding: const EdgeInsets.all(8.0),
+                        //color: Colors.grey.shade200,
+                          child: new Text(transcription)
+                      )
+                  ),
+
                   _buildButton(
                     onPressed: _speechRecognitionAvailable && !_isListening
                         ? () => start()
@@ -95,22 +100,31 @@ class _MyAppState extends State<MyApp> {
                     label: 'Cancel',
                   ),
                   _buildButton(
+                    //_isListening ? () => stop() : null,
                     onPressed: _isListening ? () => stop() : null,
                     label: 'Stop',
                   ),
+                  _buildButton(
+                    onPressed: send(transcription),
+                    label: 'Send!',
+                  ),
+
+
                 ],
               ),
             )),
+
+
       ),
     );
   }
 
   List<CheckedPopupMenuItem<Language>> get _buildLanguagesWidgets => languages
       .map((l) => new CheckedPopupMenuItem<Language>(
-            value: l,
-            checked: selectedLang == l,
-            child: new Text(l.name),
-          ))
+    value: l,
+    checked: selectedLang == l,
+    child: new Text(l.name),
+  ))
       .toList();
 
   void _selectLangHandler(Language lang) {
@@ -118,7 +132,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _buildButton({String label, VoidCallback onPressed}) => new Padding(
-      padding: new EdgeInsets.all(12.0),
+      padding: new EdgeInsets.all(5.0),
       child: new RaisedButton(
         color: Colors.cyan.shade600,
         onPressed: onPressed,
@@ -128,6 +142,20 @@ class _MyAppState extends State<MyApp> {
         ),
       ));
 
+  Widget _sendButton({String label, VoidCallback onPressed}) => new Padding(
+    padding: new EdgeInsets.all(5.0),
+    child: new ButtonBar(
+
+    ),
+    /*child: new RaisedButton(
+        color: Colors.cyan.shade600,
+        onPressed: onPressed,
+        child: new Text(
+          label,
+          style: const TextStyle(color: Colors.white),
+        ),*/
+  );
+
   void start() => _speech
       .listen(locale: selectedLang.code)
       .then((result) => print('_MyAppState.start => result $result'));
@@ -136,8 +164,8 @@ class _MyAppState extends State<MyApp> {
       _speech.cancel().then((result) => setState(() => _isListening = result));
 
   void stop() => _speech.stop().then((result) {
-        setState(() => _isListening = result);
-      });
+    setState(() => _isListening = result);
+  });
 
   void onSpeechAvailability(bool result) =>
       setState(() => _speechRecognitionAvailable = result);
@@ -145,7 +173,7 @@ class _MyAppState extends State<MyApp> {
   void onCurrentLocale(String locale) {
     print('_MyAppState.onCurrentLocale... $locale');
     setState(
-        () => selectedLang = languages.firstWhere((l) => l.code == locale));
+            () => selectedLang = languages.firstWhere((l) => l.code == locale));
   }
 
   void onRecognitionStarted() => setState(() => _isListening = true);
@@ -155,4 +183,11 @@ class _MyAppState extends State<MyApp> {
   void onRecognitionComplete() => setState(() => _isListening = false);
 
   void errorHandler() => activateSpeechRecognizer();
+
+  send(String transcription) {
+    //send the string to pi!
+    print('Hi this is the send button!');
+    transcription = null;
+  }
 }
+
