@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
       home: new Scaffold(
 
         appBar: new AppBar(
-          title: new Text('SpeechRecognition'),
+          title: new Text('Speech Recognition'),
           actions: [
             new PopupMenuButton<Language>(
               onSelected: _selectLangHandler,
